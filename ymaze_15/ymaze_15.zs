@@ -23,6 +23,7 @@ SET(THERMOSTAT,28)
 DEFINE MAKEMAP 5682
 DEFINE COLOURMAP 5683
 DEFINE SUMSIZE 20
+SETCOLOUR(15,0,1,0) # set non-arena area color
 SET(COLOURMAP, 1) # berkeley inferno
 
 # Loads arena and detector assets
@@ -80,6 +81,7 @@ ACTION MAIN
 
     LIGHTS(ALL, OFF)
     AUTOREFERENCE()
+    WAIT(acclimation_length)
     SET(LOG_PERFRAME, ON)
     VIDEO(99999999999, "ymaze_tracking")
 
