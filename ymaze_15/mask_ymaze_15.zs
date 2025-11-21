@@ -3,14 +3,15 @@ DEFINE NUM_ROWS 3
 DEFINE NUM_COLS 5
 
 DEFINE X_OFFSET 16.6
-DEFINE Y_OFFSET 11.25
+DEFINE Y_OFFSET 12.5
 DEFINE X_STEP 23.74
-DEFINE Y_STEP 28.195
+DEFINE Y_STEP 27.6
 
-DEFINE MAZE_RADIUS 10
-DEFINE END_OF_ARM_RADIUS 3
-DEFINE RECTANGLE_LENGTH 13
-DEFINE RECTANGLE_WIDTH 4
+DEFINE MAZE_RADIUS 5.4
+DEFINE END_OF_ARM_RADIUS 2.3
+DEFINE RECTANGLE_LENGTH 9
+DEFINE RECTANGLE_WIDTH 3.5
+DEFINE UPSIDE_DOWN_OFFSET 4.3
 
 DEFINE PAUSE_SECONDS 0.1
 
@@ -59,9 +60,9 @@ ACTION DRAW_YMAZE
         @x = X_OFFSET
 
         @current_col = 1
-        @is_odd_col = @current_col / 2 # hopefully this is integer divison
         WHILE @current_col <= NUM_COLS
 
+            INVOKE(SET_IS_ODD_COL)
             @my_current_zone = 1
             WHILE @my_current_zone <= 4
 
@@ -89,11 +90,11 @@ ACTION DRAW_YMAZE
                         # circle at end of arms
                         ShapeType(DISC, END_OF_ARM_RADIUS)
                         IF @my_current_zone = 1
-                            ShapeDraw(@x - 2 * @x_adjustment, @y - 2 * @y_adjustment)
+                            ShapeDraw(@x - @x_adjustment - @x_adjustment, @y - @y_adjustment - @y_adjustment)
                         ELSEIF @my_current_zone = 2
-                            ShapeDraw(@x + 2 * @x_adjustment, @y - 2 * @y_adjustment)
+                            ShapeDraw(@x + @x_adjustment + @x_adjustment, @y - @y_adjustment - @y_adjustment)
                         ELSE
-                            ShapeDraw(@x, @y + 2 * MAZE_RADIUS)
+                            ShapeDraw(@x, @y + MAZE_RADIUS + MAZE_RADIUS)
                         ENDIF
                     ELSEIF @my_current_zone = 4 # center
                         ShapeType(TRIANGLE, RECTANGLE_WIDTH)
@@ -106,28 +107,28 @@ ACTION DRAW_YMAZE
                         ShapeType(RECTANGLE, RECTANGLE_LENGTH, RECTANGLE_WIDTH)
                         IF @my_current_zone = 1
                             ShapeAngle(90.0)
-                            ShapeDraw(@x, @y - MAZE_RADIUS)
+                            ShapeDraw(@x, @y - MAZE_RADIUS + UPSIDE_DOWN_OFFSET)
                         ELSEIF @my_current_zone = 2
                             ShapeAngle(30.0)
-                            ShapeDraw(@x + @x_adjustment, @y + @y_adjustment)
+                            ShapeDraw(@x + @x_adjustment, @y + @y_adjustment + UPSIDE_DOWN_OFFSET)
                         ELSE
                             ShapeAngle(150.0)
-                            ShapeDraw(@x - @x_adjustment, @y + @y_adjustment)
+                            ShapeDraw(@x - @x_adjustment, @y + @y_adjustment + UPSIDE_DOWN_OFFSET)
                         ENDIF
 
                         # circle at end of arms
                         ShapeType(DISC, END_OF_ARM_RADIUS)
                         IF @my_current_zone = 1
-                            ShapeDraw(@x, @y - 2 * MAZE_RADIUS)
+                            ShapeDraw(@x, @y - MAZE_RADIUS - MAZE_RADIUS + UPSIDE_DOWN_OFFSET)
                         ELSEIF @my_current_zone = 2
-                            ShapeDraw(@x + 2 * @x_adjustment, @y + 2 * @y_adjustment)
+                            ShapeDraw(@x + @x_adjustment + @x_adjustment, @y + @y_adjustment + @y_adjustment + UPSIDE_DOWN_OFFSET)
                         ELSE
-                            ShapeDraw(@x - 2 * @x_adjustment, @y + 2 * @y_adjustment)
+                            ShapeDraw(@x - @x_adjustment - @x_adjustment, @y + @y_adjustment + @y_adjustment + UPSIDE_DOWN_OFFSET)
                         ENDIF
                     ELSEIF @my_current_zone = 4 # center
                         ShapeType(TRIANGLE, RECTANGLE_WIDTH)
                         ShapeAngle(180.0)
-                        ShapeDraw(@x, @y)
+                        ShapeDraw(@x, @y + UPSIDE_DOWN_OFFSET)
                     ENDIF
                 ENDIF
 
@@ -150,9 +151,25 @@ ACTION DRAW_YMAZE
     ENDWHILE
 
     IF @doing_zones = TRUE
-        SaveDrawing("y4z_r2")
+        SaveDrawing("y15_mask_zones")
     ELSE
-        SaveDrawing("y4a_r2")
+        SaveDrawing("y15_mask_arenas")
+    ENDIF
+
+COMPLETE
+
+ACTION SET_IS_ODD_COL
+
+    IF @current_col = 1
+        @is_odd_col = TRUE
+    ELSEIF @current_col = 2
+        @is_odd_col = FALSE
+    ELSEIF @current_col = 3
+        @is_odd_col = TRUE
+    ELSEIF @current_col = 4
+        @is_odd_col = FALSE
+    ELSEIF @current_col = 5
+        @is_odd_col = TRUE
     ENDIF
 
 COMPLETE
