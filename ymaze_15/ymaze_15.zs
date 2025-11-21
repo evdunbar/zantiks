@@ -18,8 +18,8 @@ SET(AUTOREF_TIMEOUT, 10)
 # DEFINE X_DRAWTRACKS 30011   # development setting: enable track drawing
 
 # Loads arena and detector assets
-LOAD(ARENAS, "ay15.bmp")
-LOAD(ZONES, "zy15.bmp")
+LOAD(ARENAS, "ymaze_15_arenas.bmp")
+LOAD(ZONES, "ymaze_15_zones.bmp")
 
 
 ACTION MAIN
