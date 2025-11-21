@@ -1,22 +1,21 @@
-DEFINE NUM_SAMPLES 1650 # 27.5 minutes
-DEFINE TIME_BIN 1 # second
-DEFINE AUTOREF_SECONDS 300 # 5 minutes
+DEFINE NUM_SAMPLES 1650    # 27.5 minutes
+DEFINE TIME_BIN 1          # 1    second
+DEFINE AUTOREF_SECONDS 300 # 5    minutes
 
-DEFINE DARK_HOURS 10 # start at 22:00
-DEFINE LIGHT_HOURS 13 # start at 08:55
+DEFINE LIGHT_HOURS_1 13 # starts at 09:00
+DEFINE DARK_HOURS 10    # starts at 22:00
+DEFINE LIGHT_HOURS_2 2  # starts at 08:00
 
 # variables
 DEFINE is_day 100
 @is_day = FALSE
-DEFINE hours_passed 200
-@hours_passed = 0
 
 # tracking settings for larval zebrafish
-SET(TARGET_SIZE, 2) # radius of animal in mm
+SET(TARGET_SIZE, 2)        # radius of animal in mm
 SET(DETECTOR_THRESHOLD, 5) # sensitivity threshold
 
 # define auto reference tracking requirements
-SET(AUTOREF_MODE, 0)
+SET(AUTOREF_MODE, 2)
 SET(AUTOREF_TIMEOUT, AUTOREF_SECONDS)
 
 # no tracking marker
@@ -91,9 +90,11 @@ ACTION MAIN
     SET(LOG_PERFRAME, ON)
 
     INVOKE(BRIGHT)
-    INVOKE(HOUR, LIGHT_HOURS)
+    INVOKE(HOUR, LIGHT_HOURS_1)
     INVOKE(DARK)
     INVOKE(HOUR, DARK_HOURS)
+    INVOKE(BRIGHT)
+    INVOKE(HOUR, LIGHT_HOURS_2)
 
     SET(LOG_PERFRAME, OFF)
 
@@ -132,8 +133,6 @@ ACTION HOUR
     AUTOREFERENCE()             # 5mins of autoreference
     INVOKE(SAMPLE, NUM_SAMPLES) # 27.5mins of tracking
 
-    @hours_passed = @hours_passed + 1
-
 COMPLETE
 
 
@@ -161,3 +160,4 @@ ACTION SAMPLE
 COMPLETE
 
 # vim: ft=zanscript
+
