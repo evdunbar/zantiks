@@ -1,12 +1,10 @@
+DEFINE bin_length 1   # 1 second
+DEFINE num_bins 600   # 10 minutes total experiment time
+DEFINE num_cycles 5 # number of light dark cycles to run 
 
-SET(THERMOSTAT,28)
-
-DEFINE PRETRIAL_TIME 600 # acclimation period
-DEFINE NUM_WELLS 24
-DEFINE TIME_BIN 1
-DEFINE NUM_TIME_BINS 600 
-
-DEFINE VIDEO_LENGTH 99999999999
+# variables
+DEFINE current_cycle 200
+@current_cycle = 0     
 
 # tracking settings for larval zebrafish 
 SET(TARGET_SIZE,2) # radius of animal in mm 
@@ -16,78 +14,59 @@ SET(DETECTOR_THRESHOLD,6) # sensitivity threshold
 SET(AUTOREF_MODE,MOVEMENT)   			
 SET(AUTOREF_TIMEOUT,60)
 
-DEFINE X_LOGDATA_TRACKS 799			# Development setting: log track lengths (total) 
-DEFINE X_DRAWTRACKS 30011           # Development setting: enable track drawing
+# DEFINE X_LOGDATA_TRACKS 799			# Development setting: log track lengths (total) 
+# DEFINE X_DRAWTRACKS 30011           # Development setting: enable track drawing
+
+SET(THERMOSTAT,28)
 
 # Sets the data output counter label to begin at 0, labels data in numerical order
 SET(COUNTER1,COUNTER_ZERO) 
 
-# changes marker from default crosshair to target
-TargetMarker(2,1,0)     #Radius, pip length, pip polarity
+LOAD(ARENAS,"a48.bmp")		# this bitmap is required in your assets directory
 
 
 ACTION MAIN    		
 
-    INVOKE(LIGHT,1)
-    
-    LOGCREATE("TEXT:TIME|TEXT:VARIABLE|TEXT:CONDITION|TEXT:TIME_BIN")
-
-    IF NUM_WELLS = 6							# completes correct headers and loads arenas
-    	INVOKE(WELL_6)
-    ENDIF
-    
-    IF NUM_WELLS = 12
-    	INVOKE(WELL_12)
-    ENDIF
-
-    IF NUM_WELLS = 24
-    	INVOKE(WELL_24)
-    ENDIF
-    
-    IF NUM_WELLS = 48
-    	INVOKE(WELL_48)
-    ENDIF
-    
-    IF NUM_WELLS = 96
-    	INVOKE(WELL_96)
-    ENDIF
-    
+    LOGCREATE("TEXT:TIME|TEXT:VARIABLE|TEXT:CONDITION|TEXT:BIN_NUM")
+    LOGAPPEND("TEXT:A1|TEXT:A2|TEXT:A3|TEXT:A4|TEXT:A5|TEXT:A6")
+    LOGAPPEND("TEXT:A7|TEXT:A8")
+    LOGAPPEND("TEXT:B1|TEXT:B2|TEXT:B3|TEXT:B4|TEXT:B5|TEXT:B6")
+    LOGAPPEND("TEXT:B7|TEXT:B8")
+    LOGAPPEND("TEXT:C1|TEXT:C2|TEXT:C3|TEXT:C4|TEXT:C5|TEXT:C6")
+    LOGAPPEND("TEXT:C7|TEXT:C8")
+    LOGAPPEND("TEXT:D1|TEXT:D2|TEXT:D3|TEXT:D4|TEXT:D5|TEXT:D6")
+    LOGAPPEND("TEXT:D7|TEXT:D8")
+    LOGAPPEND("TEXT:E1|TEXT:E2|TEXT:E3|TEXT:E4|TEXT:E5|TEXT:E6")
+    LOGAPPEND("TEXT:E7|TEXT:E8")
+    LOGAPPEND("TEXT:F1|TEXT:F2|TEXT:F3|TEXT:F4|TEXT:F5|TEXT:F6")
+    LOGAPPEND("TEXT:F7|TEXT:F8")
     LOGRUN()
-	
-    WAIT(PRETRIAL_TIME)
-    
+
+    # Set up position tracking
+    LOGFILE(2, "xy_position")
+    SET(LOG_STREAM_PERFRAME, 2)
+    LOGCREATE("RUNTIME|RAW_XY:A1-15")
+
+    INVOKE(DARK, 1)
 	AUTOREFERENCE() 
+    # SET(X_DRAWTRACKS,1)
+    VIDEO(99999999999, "light_dark_transition_tracking")
 
-    SET(X_DRAWTRACKS,1)
+    WHILE @current_cycle < num_cycles
 
-    VIDEO(VIDEO_LENGTH,"Zeb_LDT_1fps") #timelapse at 1 frame per sec  
-    VIDEOSKIP(29)
+        INVOKE(LIGHT, 1)
+        INVOKE(MMLIGHT, 1)
+
+        INVOKE(DARK, 1)
+        INVOKE(MMDARK, 1)
+
+        @current_cycle = @current_cycle + 1
     
-	SET(VIDEO_STREAM,1)
-    VIDEO(VIDEO_LENGTH,"Zeb_LDT_10spf")  #timelapse 10secs per frame 
-    VIDEOSKIP(299)
-	
-	LOAD(OVERLAY_TEXT,"1,5:Light") #writes video label
-	INVOKE(LIGHT)
-    INVOKE(MMLIGHT,NUM_TIME_BINS)
+    ENDWHILE
 
-	LOAD(OVERLAY_TEXT,"1,5:Dark ")
-    INVOKE(DARK)
-    INVOKE(MMDARK,NUM_TIME_BINS) 
+    SET(LOG_PERFRAME, OFF)
+    VIDEOSTOP()
 
-	LOAD(OVERLAY_TEXT,"1,5:Light")
-	INVOKE(LIGHT)
-	INVOKE(MMLIGHT,NUM_TIME_BINS) 
-
-	LOAD(OVERLAY_TEXT,"1,5:Dark ")
-    INVOKE(DARK)
-	INVOKE(MMDARK,NUM_TIME_BINS)  
-
-	LOAD(OVERLAY_TEXT,"1,5:Light")
-	INVOKE(LIGHT)
-	INVOKE(MMLIGHT,NUM_TIME_BINS)    
-	LOAD(OVERLAY_CLEAR,"") #clears video label  
-    
 COMPLETE                 
 
 
@@ -97,12 +76,12 @@ ACTION MMDARK
     
 	LOGDATA(DATA_SNAPSHOT,"begin")
     
-    WAIT(TIME_BIN)  
+    WAIT(bin_length)  
     
 	LOGDATA(DATA_SNAPSHOT,"end")  
 	LOGDATA(DATA_SELECT,"begin") 
 	LOGDATA(DATA_DELTA,"end")  
-	 
+
     LOGCREATE("RUNTIME|TEXT:DARK|COUNTER1")
 	LOGAPPEND("ARENA_DISTANCES:*")         
 	LOGRUN()
@@ -116,7 +95,7 @@ ACTION MMLIGHT
 
 	LOGDATA(DATA_SNAPSHOT,"begin")
     
-    WAIT(TIME_BIN)  
+    WAIT(bin_length)  
     
 	LOGDATA(DATA_SNAPSHOT,"end")
 	LOGDATA(DATA_SELECT,"begin")  
@@ -143,85 +122,6 @@ ACTION LIGHT
 	SET(GPO6,1)	
 	SET(GPO7,1)
 	SET(GPO8,1)
-
-COMPLETE
-
-
-##############################################################################
-
-# Actions logging arena headers and loading assets
-ACTION WELL_6
-
-	LOAD(ARENAS,"a6.bmp")		# this bitmap is required in your assets directory
-
-    LOGAPPEND("TEXT:A1|TEXT:A2|TEXT:A3|TEXT:A4|TEXT:A5|TEXT:A6")
-
-COMPLETE
-
-
-ACTION WELL_12
-
-	LOAD(ARENAS,"a12.bmp")		# this bitmap is required in your assets directory
-
-    LOGAPPEND("TEXT:A1|TEXT:A2|TEXT:A3|TEXT:A4")
-    LOGAPPEND("TEXT:B1|TEXT:B2|TEXT:B3|TEXT:B4")
-    LOGAPPEND("TEXT:C1|TEXT:C2|TEXT:C3|TEXT:C4")
-
-COMPLETE
-
-
-ACTION WELL_24
-
-	LOAD(ARENAS,"a24.bmp")		# this bitmap is required in your assets directory
-
-    LOGAPPEND("TEXT:A1|TEXT:A2|TEXT:A3|TEXT:A4|TEXT:A5|TEXT:A6")
-    LOGAPPEND("TEXT:B1|TEXT:B2|TEXT:B3|TEXT:B4|TEXT:B5|TEXT:B6")
-    LOGAPPEND("TEXT:C1|TEXT:C2|TEXT:C3|TEXT:C4|TEXT:C5|TEXT:C6")
-    LOGAPPEND("TEXT:D1|TEXT:D2|TEXT:D3|TEXT:D4|TEXT:D5|TEXT:D6")
-
-COMPLETE
-
-
-ACTION WELL_48
-
-	LOAD(ARENAS,"a48.bmp")		# this bitmap is required in your assets directory
-
-    LOGAPPEND("TEXT:A1|TEXT:A2|TEXT:A3|TEXT:A4|TEXT:A5|TEXT:A6")
-    LOGAPPEND("TEXT:A7|TEXT:A8")
-    LOGAPPEND("TEXT:B1|TEXT:B2|TEXT:B3|TEXT:B4|TEXT:B5|TEXT:B6")
-    LOGAPPEND("TEXT:B7|TEXT:B8")
-    LOGAPPEND("TEXT:C1|TEXT:C2|TEXT:C3|TEXT:C4|TEXT:C5|TEXT:C6")
-    LOGAPPEND("TEXT:C7|TEXT:C8")
-    LOGAPPEND("TEXT:D1|TEXT:D2|TEXT:D3|TEXT:D4|TEXT:D5|TEXT:D6")
-    LOGAPPEND("TEXT:D7|TEXT:D8")
-    LOGAPPEND("TEXT:E1|TEXT:E2|TEXT:E3|TEXT:E4|TEXT:E5|TEXT:E6")
-    LOGAPPEND("TEXT:E7|TEXT:E8")
-    LOGAPPEND("TEXT:F1|TEXT:F2|TEXT:F3|TEXT:F4|TEXT:F5|TEXT:F6")
-    LOGAPPEND("TEXT:F7|TEXT:F8")
-  
-COMPLETE
-
-
-ACTION WELL_96
-
-	LOAD(ARENAS,"a96.bmp")		# this bitmap is required in your assets directory
-
-    LOGAPPEND("TEXT:A1|TEXT:A2|TEXT:A3|TEXT:A4|TEXT:A5|TEXT:A6")
-    LOGAPPEND("TEXT:A7|TEXT:A8|TEXT:A9|TEXT:A10|TEXT:A11|TEXT:A12")
-    LOGAPPEND("TEXT:B1|TEXT:B2|TEXT:B3|TEXT:B4|TEXT:B5|TEXT:B6")
-    LOGAPPEND("TEXT:B7|TEXT:B8|TEXT:B9|TEXT:B10|TEXT:B11|TEXT:B12")
-    LOGAPPEND("TEXT:C1|TEXT:C2|TEXT:C3|TEXT:C4|TEXT:C5|TEXT:C6")
-    LOGAPPEND("TEXT:C7|TEXT:C8|TEXT:C9|TEXT:C10|TEXT:C11|TEXT:C12")
-    LOGAPPEND("TEXT:D1|TEXT:D2|TEXT:D3|TEXT:D4|TEXT:D5|TEXT:D6")
-    LOGAPPEND("TEXT:D7|TEXT:D8|TEXT:D9|TEXT:D10|TEXT:D11|TEXT:D12")
-    LOGAPPEND("TEXT:E1|TEXT:E2|TEXT:E3|TEXT:E4|TEXT:E5|TEXT:E6")
-    LOGAPPEND("TEXT:E7|TEXT:E8|TEXT:E9|TEXT:E10|TEXT:E11|TEXT:E12")
-    LOGAPPEND("TEXT:F1|TEXT:F2|TEXT:F3|TEXT:F4|TEXT:F5|TEXT:F6")
-    LOGAPPEND("TEXT:F7|TEXT:F8|TEXT:F9|TEXT:F10|TEXT:F11|TEXT:F12")
-    LOGAPPEND("TEXT:G1|TEXT:G2|TEXT:G3|TEXT:G4|TEXT:G5|TEXT:G6")
-    LOGAPPEND("TEXT:G7|TEXT:G8|TEXT:G9|TEXT:G10|TEXT:G11|TEXT:G12")
-    LOGAPPEND("TEXT:H1|TEXT:H2|TEXT:H3|TEXT:H4|TEXT:H5|TEXT:H6")
-    LOGAPPEND("TEXT:H7|TEXT:H8|TEXT:H9|TEXT:H10|TEXT:H11|TEXT:H12")
 
 COMPLETE
 

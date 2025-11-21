@@ -33,7 +33,7 @@ ACTION MAIN
 	LIGHTS(LIGHT16, WHITE)    
     SET(LOG_PERFRAME, ON)
     SET(COUNTER1, COUNTER_ZERO)         
-	VIDEO(99999999999, "light_dark_preference_video")
+	VIDEO(99999999999, "light_dark_preference_tracking")
 
 	INVOKE(TEST, num_bins)            
 
