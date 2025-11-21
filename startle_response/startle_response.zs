@@ -1,10 +1,10 @@
-DEFINE TIME_BIN 5
-DEFINE NUM_SAMPLES 5
-DEFINE NUM_BLOCKS 5
+DEFINE response_length 1 # 1 second
+DEFINE num_trials 8
+DEFINE inter_trial_interval_length 300 # 5 minutes
 
-DEFINE NUM_VIBRATIONS 5
-DEFINE WAIT_TIME 1
-DEFINE NUM_ITI 3#00
+# variables
+DEFINE do_prepulse 200
+@do_prepulse = 0
 
 # define the animal model tracking requirements (dependent on animal size)
 SET(TARGET_SIZE,2)
@@ -73,69 +73,73 @@ ACTION MAIN
     INVOKE(LIGHTS_OFF)
     AUTOREFERENCE()
     SET(LOG_PERFRAME,ON)
+    VIDEO(99999999999, "startle_response_tracking")
 
-    INVOKE(BLOCK,NUM_BLOCKS)
+    INVOKE(trial, num_trials)
+
+    SET(LOG_PERFRAME,OFF)
+    VIDEOSTOP()
 
 COMPLETE
 
 
 #The following lines of code outline the sequence of commands for each BLOCK
-ACTION BLOCK
+ACTION trial
 
-    INVOKE(BASELINE,NUM_SAMPLES)
+    IF @do_prepulse = 0
 
-    INVOKE(VIBRATION_SEQUENCE,NUM_VIBRATIONS)
-    SET(LOG_PERFRAME,OFF)
+        INVOKE(startle, 1)
+        @do_prepulse = 1
+
+    ELSE
+
+        INVOKE(prepulse, 1)
+        @do_prepulse = 0
+
+    ENDIF
+
+    INVOKE(inter_trial_interval, 1)
 
 COMPLETE
 
 
-#The following action runs a vibrationn folowed by an intertrial period
-ACTION VIBRATION_SEQUENCE
+ACTION startle
 
-    INVOKE(VIBRATION,1)
-    INVOKE(ITI,NUM_ITI)
+    LOGDATA(DATA_SNAPSHOT,"beginVIB")
 
-COMPLETE
+    # U0 step size of 1
+    # D1176 ~= 200Hz
+    # M+-1 single steps in alternating directions
+    ZCOMMAND("U0 D1176 M1 M-1 M1 M-1")
 
+    WAIT(response_length)
 
-# code for collecting data for each sample at each time bin across all the blocks
-ACTION BASELINE
+    LOGDATA(DATA_SNAPSHOT,"endVIB")
+    LOGDATA(DATA_SELECT,"beginVIB")
+    LOGDATA(DATA_DELTA,"endVIB")
 
-    LOGDATA(DATA_SNAPSHOT,"begin")
-
-    WAIT(TIME_BIN)
-
-    LOGDATA(DATA_SNAPSHOT,"end")
-    LOGDATA(DATA_SELECT,"begin")
-    LOGDATA(DATA_DELTA,"end")
-
-    LOGCREATE("RUNTIME|TEMPERATURE1|TEXT:BASELINE")
+    LOGCREATE("RUNTIME|TEMPERATURE1|TEXT:STARTLE")
     LOGAPPEND("ARENA_DISTANCES:*")
     LOGRUN()
 
 COMPLETE
 
 
-# The following action collects a 1 second bin of data whilst running a motorcommand.
-ACTION VIBRATION
+ACTION prepulse
 
     LOGDATA(DATA_SNAPSHOT,"beginVIB")
 
-    ZCOMMAND("U0 D1176 M1 M-1 M1 M-1")
+    # U3 is 1/8 step size for prepulse
+    # P300 is 300 ms pause between prepulse and startle vibrations
+    ZCOMMAND("U3 D1176 M1 M-1 M1 M-1 P300 U0 D1176 M1 M-1 M1 M-1")
 
-    #   'M'     Number of Motor steps, the more motor steps, the longer the vibration
-    #   'D'     Delay between motor steps (to set motor speed), for d1000 the delay is 4.2 microseconds
-    #   'U'     Step mode (0-3, for full/half/quarter/eighth step modes), U3 is the smallest vibration intensity
-    #   'P'     Pause, to set delay between motor movements
-
-    WAIT(WAIT_TIME)
+    WAIT(response_length)
 
     LOGDATA(DATA_SNAPSHOT,"endVIB")
     LOGDATA(DATA_SELECT,"beginVIB")
     LOGDATA(DATA_DELTA,"endVIB")
 
-    LOGCREATE("RUNTIME|TEMPERATURE1|TEXT:VIBRATE")
+    LOGCREATE("RUNTIME|TEMPERATURE1|TEXT:PREPULSE")
     LOGAPPEND("ARENA_DISTANCES:*")
     LOGRUN()
 
@@ -143,11 +147,11 @@ COMPLETE
 
 
 #The following action for collects data in 1 second time bins for the inter trial time (period between vibrations)
-ACTION ITI
+ACTION inter_trial_interval
 
     LOGDATA(DATA_SNAPSHOT,"beginITI")
 
-    WAIT(WAIT_TIME)
+    WAIT(inter_trial_interval_length)
 
     LOGDATA(DATA_SNAPSHOT,"endITI")
     LOGDATA(DATA_SELECT,"beginITI")
