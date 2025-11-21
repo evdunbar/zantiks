@@ -1,7 +1,7 @@
 # define experiment requirements
 DEFINE acclimation_length 300  # 5 minutes
 DEFINE bin_length 60           # 1 minute
-DEFINE num_bins 30             # 6 minutes total experiment time
+DEFINE num_bins 30             # 30 minutes total experiment time
 
 SET(TARGET_SIZE, 2)
 SET(DETECTOR_THRESHOLD, 5)
