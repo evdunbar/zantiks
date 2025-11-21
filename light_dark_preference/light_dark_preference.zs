@@ -2,16 +2,12 @@
 DEFINE bin_length 60 # 1 minute
 DEFINE num_bins 6    # 6 minutes total experiment time
 
-# define the animal model tracking requirments (dependent on animal size)
 SET(TARGET_SIZE, 15) 
 SET(DETECTOR_THRESHOLD, 5)
-
-# takes an autoreference required for tracking 
 SET(AUTOREF_MODE, MOVEMENT)   			
 SET(AUTOREF_TIMEOUT, 30)
 
-# load detector asset
-LOAD(ZONES, "arena_LiDa_640x480.bmp")
+LOAD(ZONES, "light_dark_preference_zones.bmp")
 
 
 ACTION MAIN   
