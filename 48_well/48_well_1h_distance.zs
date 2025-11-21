@@ -1,39 +1,39 @@
-# This scirpt was developed from a demo script provided by Jenny. 
+# This scirpt was developed from a demo script provided by Jenny.
 # It now works to track Distance Moved in 1hr or 3600sec
 
 # define experiment requirements
 DEFINE ACCLIMATE 300       # This is the number of seconds the larvae will have to acclimate before data collection
 DEFINE TIME_BIN 3600   #1  #This is the number of seconds each experiment will run
-DEFINE NUM_SAMPLES 1   #60 #This is the number of times each experiment will run 
+DEFINE NUM_SAMPLES 1   #60 #This is the number of times each experiment will run
 
 # define the animal model tracking requirments (dependent on animal size)
-SET(TARGET_SIZE,2) 
-SET(DETECTOR_THRESHOLD,4) 
- 
+SET(TARGET_SIZE,2)
+SET(DETECTOR_THRESHOLD,4)
+
 # define auto reference tracking requirements
-SET(AUTOREF_MODE,MOVEMENT) 
-SET(AUTOREF_TIMEOUT,5)		
+SET(AUTOREF_MODE,MOVEMENT)
+SET(AUTOREF_TIMEOUT,5)
 
 # development setting which enables track drawing
-DEFINE X_DRAWTRACKS 30011      
+DEFINE X_DRAWTRACKS 30011
 
-#loads the assets needs to collect data			 
+#loads the assets needs to collect data
 LOAD(ARENAS,"a48.bmp")
 LOAD(ZONES,"dz48.bmp")
 
 #Change the marker surrounding the animal
-TargetMarker(2.5,1,1)     
+TargetMarker(2.5,1,1)
 
-# The ACTION MAIN outlines the whole experiment 
+# The ACTION MAIN outlines the whole experiment
 ###################################################
 
-ACTION MAIN  
-    
-    SET(COUNTER1,COUNTER_ZERO)			
-	
-    # writes column headings to .csv file 
-	LOGCREATE("TEXT:RUNTIME|TEXT:TEMPERATURE|TEXT:TIME_BIN|TEXT:VARIABLE")
-    
+ACTION MAIN
+
+    SET(COUNTER1,COUNTER_ZERO)
+
+    # writes column headings to .csv file
+    LOGCREATE("TEXT:RUNTIME|TEXT:TEMPERATURE|TEXT:TIME_BIN|TEXT:VARIABLE")
+
     #LOGAPPEND("TEXT:A1|TEXT:A2|TEXT:A3|TEXT:A4|TEXT:A5|TEXT:A6")
     #LOGAPPEND("TEXT:B1|TEXT:B2|TEXT:B3|TEXT:B4|TEXT:B5|TEXT:B6")
     #LOGAPPEND("TEXT:C1|TEXT:C2|TEXT:C3|TEXT:C4|TEXT:C5|TEXT:C6")
@@ -48,33 +48,33 @@ ACTION MAIN
     LOGAPPEND("TEXT:A13_Z1|TEXT:A13_Z2|TEXT:A14_Z1|TEXT:A14_Z2")
     LOGAPPEND("TEXT:A15_Z1|TEXT:A15_Z2|TEXT:A16_Z1|TEXT:A16_Z2")
     LOGAPPEND("TEXT:A17_Z1|TEXT:A17_Z2|TEXT:A18_Z1|TEXT:A18_Z2")
-	LOGAPPEND("TEXT:A19_Z1|TEXT:A19_Z2|TEXT:A20_Z1|TEXT:A20_Z2")
+    LOGAPPEND("TEXT:A19_Z1|TEXT:A19_Z2|TEXT:A20_Z1|TEXT:A20_Z2")
     LOGAPPEND("TEXT:A21_Z1|TEXT:A21_Z2|TEXT:A22_Z1|TEXT:A22_Z2")
     LOGAPPEND("TEXT:A23_Z1|TEXT:A23_Z2|TEXT:A24_Z1|TEXT:A24_Z2")
     LOGAPPEND("TEXT:A25_Z1|TEXT:A25_Z2|TEXT:A26_Z1|TEXT:A26_Z2")
-	LOGAPPEND("TEXT:A27_Z1|TEXT:A27_Z2|TEXT:A28_Z1|TEXT:A28_Z2")
+    LOGAPPEND("TEXT:A27_Z1|TEXT:A27_Z2|TEXT:A28_Z1|TEXT:A28_Z2")
     LOGAPPEND("TEXT:A29_Z1|TEXT:A29_Z2|TEXT:A30_Z1|TEXT:A30_Z2")
     LOGAPPEND("TEXT:A31_Z1|TEXT:A31_Z2|TEXT:A32_Z1|TEXT:A32_Z2")
     LOGAPPEND("TEXT:A33_Z1|TEXT:A33_Z2|TEXT:A34_Z1|TEXT:A34_Z2")
-	LOGAPPEND("TEXT:A35_Z1|TEXT:A35_Z2|TEXT:A36_Z1|TEXT:A36_Z2")
+    LOGAPPEND("TEXT:A35_Z1|TEXT:A35_Z2|TEXT:A36_Z1|TEXT:A36_Z2")
     LOGAPPEND("TEXT:A37_Z1|TEXT:A37_Z2|TEXT:A38_Z1|TEXT:A38_Z2")
     LOGAPPEND("TEXT:A39_Z1|TEXT:A39_Z2|TEXT:A40_Z1|TEXT:A40_Z2")
     LOGAPPEND("TEXT:A41_Z1|TEXT:A41_Z2|TEXT:A42_Z1|TEXT:A42_Z2")
-	LOGAPPEND("TEXT:A43_Z1|TEXT:A43_Z2|TEXT:A44_Z1|TEXT:A44_Z2")
+    LOGAPPEND("TEXT:A43_Z1|TEXT:A43_Z2|TEXT:A44_Z1|TEXT:A44_Z2")
     LOGAPPEND("TEXT:A45_Z1|TEXT:A45_Z2|TEXT:A46_Z1|TEXT:A46_Z2")
     LOGAPPEND("TEXT:A47_Z1|TEXT:A47_Z2|TEXT:A48_Z1|TEXT:A48_Z2")
-	LOGRUN()
+    LOGRUN()
 
-	AUTOREFERENCE()
-	# SET(X_DRAWTRACKS,1)
+    AUTOREFERENCE()
+    # SET(X_DRAWTRACKS,1)
 
-	INVOKE(SAMPLE,NUM_SAMPLES)
-    
+    INVOKE(SAMPLE,NUM_SAMPLES)
+
 COMPLETE
 
 
 
-# Instructions of actions invoked in the ACTION MAIN are then outlined in more detail below 
+# Instructions of actions invoked in the ACTION MAIN are then outlined in more detail below
 ############################################
 
 ACTION SAMPLE
@@ -82,28 +82,28 @@ ACTION SAMPLE
     SET(GPO6,1)
     SET(GPO7,1)
     SET(GPO8,1)
-    
+
 
     WAIT(ACCLIMATE)
-    
-	SET(COUNTER1,COUNTER_INC)												
-    
-	LOGDATA(DATA_SNAPSHOT,"begin") 
 
-	WAIT(TIME_BIN) 
-	LOGDATA(DATA_SNAPSHOT,"end")                 
+    SET(COUNTER1,COUNTER_INC)
 
-	LOGDATA(DATA_SELECT,"begin")                        
-	LOGDATA(DATA_DELTA,"end")
+    LOGDATA(DATA_SNAPSHOT,"begin")
+
+    WAIT(TIME_BIN)
+    LOGDATA(DATA_SNAPSHOT,"end")
+
+    LOGDATA(DATA_SELECT,"begin")
+    LOGDATA(DATA_DELTA,"end")
 
     SET(GPO6,0)
     SET(GPO7,0)
     SET(GPO8,0)
-    
 
-	LOGCREATE("RUNTIME|TEMPERATURE1|COUNTER1|TEXT:TOTAL_DISTANCE")
-	#LOGAPPEND("ARENA_DISTANCES*")
-    LOGAPPEND("ZONE_DISTANCES:A1-48,Z1,2")    
+
+    LOGCREATE("RUNTIME|TEMPERATURE1|COUNTER1|TEXT:TOTAL_DISTANCE")
+    #LOGAPPEND("ARENA_DISTANCES*")
+    LOGAPPEND("ZONE_DISTANCES:A1-48,Z1,2")
     LOGRUN()
 
 COMPLETE
