@@ -122,7 +122,7 @@ ACTION VIBRATION
 
     LOGDATA(DATA_SNAPSHOT,"beginVIB")
 
-    ZCOMMAND("U3 D1190 M1 M-1 M1 M-1 P300 U0 D1190 M1 M-1 M1 M-1")
+    ZCOMMAND("U0 D1176 M1 M-1 M1 M-1")
 
     #   'M'     Number of Motor steps, the more motor steps, the longer the vibration
     #   'D'     Delay between motor steps (to set motor speed), for d1000 the delay is 4.2 microseconds
