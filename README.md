@@ -18,58 +18,6 @@ These assay and asset generation scripts were originally created for the Zantiks
 
 If you are not editing these scripts through the Zantiks web interface and would like syntax highlighting, [tree-sitter-zanscript](https://github.com/elladunbar/tree-sitter-zanscript) is available.
 
-## Data Output
+## Bitmaps
 
-### 1-hour Distance
-
-- bin size: 3600 s
-- number of bins: 1
-- records: arena and zone distance
-
-### Developmental Delay
-
-- bin size: 1 s
-- number of bins: 3600
-- records: arena mean square difference
-
-### Light/Dark Preference
-
-- bin size: 60 s
-- number of bins: 30
-- records: arena and zone distance and time
-
-### Light/Dark Transition
-
-- bin size: 600 s (1 full transition)
-- number of bins: 6 (3 light, 3 dark)
-- records: arena and zone distance
-
-### Mirror Biting
-
-- bin size: 60 s
-- number of bins: 60
-- records: arena and zone count, distance, and time
-
-### Sleep
-
-- bin size: 1 s
-- number of bins: 75900
-- records: arena and zone distance
-
-### Social Preference
-
-- bin size: 1 s
-- number of bins: 1800
-- records: arena and zone time
-
-### Startle Response
-
-- bin size: 1 s
-- number of bins: 8
-- records: arena distance
-
-### Y-Maze
-
-- bin size: 60 s
-- number of bins: 60
-- records: arena and zone count, distance, and time
+The .bmp files in each folder are general representations of each arena/zone map. The colors/orders of zones and arenas will be correct, but these may not be the exact assets in use by Statler and Waldorf. They may differ in resolution and by a few pixels.
