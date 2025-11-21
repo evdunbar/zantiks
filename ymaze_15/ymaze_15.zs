@@ -1,35 +1,26 @@
-# Zanscript y-maze for tracking arm changes of animals over 30 minutes
-# Ensure you have the correct assets loaded, the correct tracking settings for you model organism &
-# the correct headings for data export (delete accordingly)
-
-# This is a sample script that illustrates how zanscript can be written to run an experiment and deliver some example data. 
-# Zantiks Ltd cannot guarantee this is how you want to run your experiments. This script is offered only to demonstrate the
-# capabilities of the system and assist you in learning how to script for your research.
-
-
 # define experiment time in seconds
-DEFINE BIN_TIME 300
-DEFINE NUM_BINS 6
+DEFINE bin_length 60 # 60 seconds = 1 minute
+DEFINE num_bins 60   # multiplied by 60 = 60 minutes total experiment time
+
+# variables
+DEFINE current_bin 200
 
 # animal model tracking requirements (dependent on animal size)
 # these settings are for zebrafish larvae, see website for examples of other model organisms
-SET(TARGET_SIZE,2)
-SET(DETECTOR_THRESHOLD,5) #4)
-
+SET(TARGET_SIZE, 2)
+SET(DETECTOR_THRESHOLD, 5)
 
 # define auto reference tracking requirements
-SET(AUTOREF_MODE,MOVEMENT)
-SET(AUTOREF_TIMEOUT,10)
-
+SET(AUTOREF_MODE, MOVEMENT)
+SET(AUTOREF_TIMEOUT, 10)
 
 # settings for drawing track traces behind animals
-DEFINE X_LOGDATA_TRACKS 799                  # development setting: log track lengths (total)
-DEFINE X_DRAWTRACKS 30011       # development setting: enable track drawing
+# DEFINE X_LOGDATA_TRACKS 799 # development setting: log track lengths (total)
+# DEFINE X_DRAWTRACKS 30011   # development setting: enable track drawing
 
-
-# Generates totals data as a separate data file 
-LOGFILE(1, "data_totals")
-SET(LOG_STREAM,1)
+# Generates bin data as a separate data file 
+LOGFILE(1, "binned_data")
+SET(LOG_STREAM, 1)
 
 # Set up column names for the processed data file.
 # 4 zones = 3 arms plus middle zone
@@ -59,49 +50,50 @@ SET(LOG_STREAM_PERFRAME, 2)
 LOGCREATE("RUNTIME|RAW_XY:A1-15")
 
 # Tells the system that we are referring to the arm changes data file for the following lines of code
-SET(LOG_STREAM,0)
+SET(LOG_STREAM, 0)
+
 
 ACTION MAIN
 
-# Loads arena and detector assets
-	LOAD(ARENAS,"ay15.bmp")
-	LOAD(ZONES,"zy15.bmp")
+    # Loads arena and detector assets
+	LOAD(ARENAS, "ay15.bmp")
+	LOAD(ZONES, "zy15.bmp")
 
-# Generate column headings for arm changes data
+    # Generate column headings for arm changes data
 	LOGCREATE("TEXT:TIME|TEXT:|TEXT:")
 	LOGAPPEND("TEXT:ARENA|TEXT:ACTION|TEXT:ZONE")
 	LOGRUN()
 
-	LIGHTS(ALL,OFF)                                                                                
+	LIGHTS(ALL, OFF)                                                                                
 	
     AUTOREFERENCE()    
 
     SET(LOG_PERFRAME, ON)
-	SET(X_DRAWTRACKS, 1)
+	# SET(X_DRAWTRACKS, 1)
 
-	VIDEO(99999999999,"YMaze_tracking")
+	VIDEO(99999999999, "YMaze_tracking")
 	VIDEOSKIP(29)
 
-	INVOKE(YMAZE,NUM_BINS)
+	INVOKE(YMAZE, num_bins)
     SET(LOG_PERFRAME, OFF)
 
 COMPLETE
 
- 
+
 ACTION YMAZE
 
-	@200 = @200 + 1
+	@current_bin = @current_bin + 1
 
-	LOGDATA(DATA_SNAPSHOT,"BEGIN")                                                          
-	LOAD(ZONECHANGES,"ON")      # records every zone change into log stream 0                                                                                    
+	LOGDATA(DATA_SNAPSHOT, "BEGIN")                                                          
+	LOAD(ZONECHANGES, "ON")      # records every zone change into log stream 0                                                                                    
 
-	WAIT(BIN_TIME)                                    
+	WAIT(bin_length)                                    
 
-	LOGDATA(DATA_SNAPSHOT,"END")         
-	LOGDATA(DATA_SELECT,"BEGIN")                                                                
-	LOGDATA(DATA_DELTA,"END")                       
+	LOGDATA(DATA_SNAPSHOT, "END")         
+	LOGDATA(DATA_SELECT, "BEGIN")                                                                
+	LOGDATA(DATA_DELTA, "END")                       
 
-	INVOKE(WRITE_DATA,1)
+	INVOKE(WRITE_DATA, 1)
 
 COMPLETE
 
@@ -109,17 +101,17 @@ COMPLETE
 # The following action writes the processed data to a separate data file 
 ACTION WRITE_DATA
 
-	SET(LOG_STREAM,1)
-	LOGCREATE("RUNTIME|@200|TEXT:TOTAL_DISTANCE_IN_ZONE|ZONE_DISTANCES:A* Z1-4")            
+	SET(LOG_STREAM, 1)
+	LOGCREATE("RUNTIME|@current_bin|TEXT:TOTAL_DISTANCE_IN_ZONE|ZONE_DISTANCES:A* Z1-4")            
 	LOGRUN()
 
-	LOGCREATE("RUNTIME|@200|TEXT:TOTAL_ENTRIES_IN_ZONE|ZONE_COUNTERS:A* Z1-4")                  
+	LOGCREATE("RUNTIME|@current_bin|TEXT:TOTAL_ENTRIES_IN_ZONE|ZONE_COUNTERS:A* Z1-4")                  
 	LOGRUN()   
 
-	LOGCREATE("RUNTIME|@200|TEXT:TOTAL_TIME_SPENT_IN_ZONE|ZONE_TIMERS:A* Z1-4")                  
+	LOGCREATE("RUNTIME|@current_bin|TEXT:TOTAL_TIME_SPENT_IN_ZONE|ZONE_TIMERS:A* Z1-4")                  
 	LOGRUN()
 
-	SET(LOG_STREAM,0)
+	SET(LOG_STREAM, 0)
 
 COMPLETE
 
