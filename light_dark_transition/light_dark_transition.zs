@@ -1,6 +1,5 @@
-DEFINE bin_length 1   # 1 second
-DEFINE num_bins 600   # 10 minutes total experiment time
-DEFINE num_cycles 5 # number of light dark cycles to run 
+DEFINE cycle_length 300 # 5 minutes
+DEFINE num_cycles 5     # number of light dark cycles to run 
 
 # variables
 DEFINE current_cycle 200
@@ -76,7 +75,7 @@ ACTION MMDARK
     
 	LOGDATA(DATA_SNAPSHOT,"begin")
     
-    WAIT(bin_length)  
+    WAIT(cycle_length)  
     
 	LOGDATA(DATA_SNAPSHOT,"end")  
 	LOGDATA(DATA_SELECT,"begin") 
@@ -95,7 +94,7 @@ ACTION MMLIGHT
 
 	LOGDATA(DATA_SNAPSHOT,"begin")
     
-    WAIT(bin_length)  
+    WAIT(cycle_length)  
     
 	LOGDATA(DATA_SNAPSHOT,"end")
 	LOGDATA(DATA_SELECT,"begin")  
