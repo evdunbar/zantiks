@@ -14,8 +14,8 @@ TARGETMARKER(0, 0, 0)
 
 SET(THERMOSTAT,28)
 
-LOAD(ARENAS, "light_dark_preference_arenas.bmp")
-LOAD(ZONES, "light_dark_preference_zones.bmp")
+LOAD(ARENAS, "a12.bmp")
+LOAD(ZONES, "ldz12.bmp")
 
 LOGFILE(2, "xy_position")
 SET(LOG_STREAM_PERFRAME, 2)
