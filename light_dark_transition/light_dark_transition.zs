@@ -14,9 +14,6 @@ SET(DETECTOR_THRESHOLD,6) # sensitivity threshold
 SET(AUTOREF_MODE,MOVEMENT)
 SET(AUTOREF_TIMEOUT,60)
 
-# DEFINE X_LOGDATA_TRACKS 799            # Development setting: log track lengths (total)
-# DEFINE X_DRAWTRACKS 30011           # Development setting: enable track drawing
-
 SET(THERMOSTAT,28)
 
 # Sets the data output counter label to begin at 0, labels data in numerical order
