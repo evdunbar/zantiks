@@ -1,8 +1,9 @@
 # define experiment requirements
-DEFINE bin_length 60 # 1 minute
-DEFINE num_bins 6    # 6 minutes total experiment time
+DEFINE acclimation_length 300 # 5 minutes
+DEFINE bin_length 60          # 1 minute
+DEFINE num_bins 6             # 6 minutes total experiment time
 
-SET(TARGET_SIZE, 15)
+SET(TARGET_SIZE, 2)
 SET(DETECTOR_THRESHOLD, 5)
 
 SET(AUTOREF_MODE, MOVEMENT)
@@ -11,6 +12,9 @@ SET(AUTOREF_TIMEOUT, 30)
 # no tracking marker
 TARGETMARKER(0, 0, 0)
 
+SET(THERMOSTAT,28)
+
+LOAD(ARENAS, "light_dark_preference_arenas.bmp")
 LOAD(ZONES, "light_dark_preference_zones.bmp")
 
 LOGFILE(2, "xy_position")

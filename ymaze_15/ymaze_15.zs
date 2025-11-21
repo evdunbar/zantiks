@@ -1,6 +1,7 @@
 # define experiment time in seconds
-DEFINE bin_length 60 # 1 minute
-DEFINE num_bins 60   # 60 minutes total experiment time
+DEFINE acclimation_length 300 # 5 minutes
+DEFINE bin_length 60          # 1 minute
+DEFINE num_bins 60            # 60 minutes total experiment time
 
 # variables
 DEFINE current_bin 200
@@ -15,6 +16,8 @@ SET(AUTOREF_TIMEOUT, 10)
 
 # no tracking marker
 TARGETMARKER(0, 0, 0)
+
+SET(THERMOSTAT,28)
 
 # heatmap generation
 DEFINE MAKEMAP 5682

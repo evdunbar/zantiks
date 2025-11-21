@@ -1,4 +1,5 @@
-DEFINE response_length 1 # 1 second
+DEFINE acclimation_length 300          # 5 minutes
+DEFINE response_length 1               # 1 second
 DEFINE num_trials 8
 DEFINE inter_trial_interval_length 300 # 5 minutes
 
@@ -8,7 +9,7 @@ DEFINE do_prepulse 200
 
 # define the animal model tracking requirements (dependent on animal size)
 SET(TARGET_SIZE,2)
-SET(DETECTOR_THRESHOLD,6)
+SET(DETECTOR_THRESHOLD,5)
 
 # define auto reference tracking requirements
 SET(AUTOREF_MODE,MOVEMENT)

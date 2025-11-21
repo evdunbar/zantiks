@@ -1,6 +1,7 @@
+DEFINE acclimation_length 300 # 5 minutes
 # length of one light or dark period
-DEFINE half_cycle_length 600 # 10 minutes
-DEFINE num_cycles 3          # number of light dark cycles to run
+DEFINE half_cycle_length 600  # 10 minutes
+DEFINE num_cycles 3           # number of light dark cycles to run
 
 # variables
 DEFINE current_cycle 200
@@ -8,11 +9,14 @@ DEFINE current_cycle 200
 
 # tracking settings for larval zebrafish
 SET(TARGET_SIZE,2) # radius of animal in mm
-SET(DETECTOR_THRESHOLD,6) # sensitivity threshold
+SET(DETECTOR_THRESHOLD,5) # sensitivity threshold
 
 # takes an autoreference required for tracking
 SET(AUTOREF_MODE,MOVEMENT)
 SET(AUTOREF_TIMEOUT,60)
+
+# no tracking marker
+TARGETMARKER(0, 0, 0)
 
 SET(THERMOSTAT,28)
 
