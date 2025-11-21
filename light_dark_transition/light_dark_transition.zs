@@ -1,5 +1,6 @@
-DEFINE cycle_length 300 # 5 minutes
-DEFINE num_cycles 3     # number of light dark cycles to run
+# length of one light or dark period
+DEFINE half_cycle_length 600 # 10 minutes
+DEFINE num_cycles 3          # number of light dark cycles to run
 
 # variables
 DEFINE current_cycle 200
@@ -97,7 +98,7 @@ ACTION MMDARK
 
     LOGDATA(DATA_SNAPSHOT,"begin")
 
-    WAIT(cycle_length)
+    WAIT(half_cycle_length)
 
     LOGDATA(DATA_SNAPSHOT,"end")
     LOGDATA(DATA_SELECT,"begin")
@@ -116,7 +117,7 @@ ACTION MMLIGHT
 
     LOGDATA(DATA_SNAPSHOT,"begin")
 
-    WAIT(cycle_length)
+    WAIT(half_cycle_length)
 
     LOGDATA(DATA_SNAPSHOT,"end")
     LOGDATA(DATA_SELECT,"begin")
