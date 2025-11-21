@@ -1,30 +1,30 @@
 DEFINE cycle_length 300 # 5 minutes
-DEFINE num_cycles 5     # number of light dark cycles to run 
+DEFINE num_cycles 3     # number of light dark cycles to run
 
 # variables
 DEFINE current_cycle 200
-@current_cycle = 0     
+@current_cycle = 0
 
-# tracking settings for larval zebrafish 
-SET(TARGET_SIZE,2) # radius of animal in mm 
-SET(DETECTOR_THRESHOLD,6) # sensitivity threshold 
+# tracking settings for larval zebrafish
+SET(TARGET_SIZE,2) # radius of animal in mm
+SET(DETECTOR_THRESHOLD,6) # sensitivity threshold
 
-# takes an autoreference required for tracking 
-SET(AUTOREF_MODE,MOVEMENT)   			
+# takes an autoreference required for tracking
+SET(AUTOREF_MODE,MOVEMENT)
 SET(AUTOREF_TIMEOUT,60)
 
-# DEFINE X_LOGDATA_TRACKS 799			# Development setting: log track lengths (total) 
+# DEFINE X_LOGDATA_TRACKS 799            # Development setting: log track lengths (total)
 # DEFINE X_DRAWTRACKS 30011           # Development setting: enable track drawing
 
 SET(THERMOSTAT,28)
 
 # Sets the data output counter label to begin at 0, labels data in numerical order
-SET(COUNTER1,COUNTER_ZERO) 
+SET(COUNTER1,COUNTER_ZERO)
 
-LOAD(ARENAS,"a48.bmp")		# this bitmap is required in your assets directory
+LOAD(ARENAS,"a48.bmp")        # this bitmap is required in your assets directory
 
 
-ACTION MAIN    		
+ACTION MAIN
 
     LOGCREATE("TEXT:TIME|TEXT:VARIABLE|TEXT:CONDITION|TEXT:BIN_NUM")
     LOGAPPEND("TEXT:A1|TEXT:A2|TEXT:A3|TEXT:A4|TEXT:A5|TEXT:A6")
@@ -47,7 +47,7 @@ ACTION MAIN
     LOGCREATE("RUNTIME|RAW_XY:A1-15")
 
     INVOKE(DARK, 1)
-	AUTOREFERENCE() 
+    AUTOREFERENCE()
     # SET(X_DRAWTRACKS,1)
     VIDEO(99999999999, "light_dark_transition_tracking")
 
@@ -60,67 +60,67 @@ ACTION MAIN
         INVOKE(MMDARK, 1)
 
         @current_cycle = @current_cycle + 1
-    
+
     ENDWHILE
 
     SET(LOG_PERFRAME, OFF)
     VIDEOSTOP()
 
-COMPLETE                 
+COMPLETE
 
 
-ACTION MMDARK            
-	
-    SET(COUNTER1,COUNTER_INC) 
-    
-	LOGDATA(DATA_SNAPSHOT,"begin")
-    
-    WAIT(cycle_length)  
-    
-	LOGDATA(DATA_SNAPSHOT,"end")  
-	LOGDATA(DATA_SELECT,"begin") 
-	LOGDATA(DATA_DELTA,"end")  
+ACTION MMDARK
+
+    SET(COUNTER1,COUNTER_INC)
+
+    LOGDATA(DATA_SNAPSHOT,"begin")
+
+    WAIT(cycle_length)
+
+    LOGDATA(DATA_SNAPSHOT,"end")
+    LOGDATA(DATA_SELECT,"begin")
+    LOGDATA(DATA_DELTA,"end")
 
     LOGCREATE("RUNTIME|TEXT:DARK|COUNTER1")
-	LOGAPPEND("ARENA_DISTANCES:*")         
-	LOGRUN()
-
-COMPLETE             	
-
-
-ACTION MMLIGHT         
-    
-	SET(COUNTER1,COUNTER_INC)
-
-	LOGDATA(DATA_SNAPSHOT,"begin")
-    
-    WAIT(cycle_length)  
-    
-	LOGDATA(DATA_SNAPSHOT,"end")
-	LOGDATA(DATA_SELECT,"begin")  
-	LOGDATA(DATA_DELTA,"end")
-
-	LOGCREATE("RUNTIME|TEXT:BRIGHT|COUNTER1")
-	LOGAPPEND("ARENA_DISTANCES:*")
+    LOGAPPEND("ARENA_DISTANCES:*")
     LOGRUN()
 
-COMPLETE              	
+COMPLETE
+
+
+ACTION MMLIGHT
+
+    SET(COUNTER1,COUNTER_INC)
+
+    LOGDATA(DATA_SNAPSHOT,"begin")
+
+    WAIT(cycle_length)
+
+    LOGDATA(DATA_SNAPSHOT,"end")
+    LOGDATA(DATA_SELECT,"begin")
+    LOGDATA(DATA_DELTA,"end")
+
+    LOGCREATE("RUNTIME|TEXT:BRIGHT|COUNTER1")
+    LOGAPPEND("ARENA_DISTANCES:*")
+    LOGRUN()
+
+COMPLETE
 
 
 ACTION DARK
-	
-	SET(GPO6,0)	
-	SET(GPO7,0)
-	SET(GPO8,0)
+
+    SET(GPO6,0)
+    SET(GPO7,0)
+    SET(GPO8,0)
 
 COMPLETE
 
 
 ACTION LIGHT
 
-	SET(GPO6,1)	
-	SET(GPO7,1)
-	SET(GPO8,1)
+    SET(GPO6,1)
+    SET(GPO7,1)
+    SET(GPO8,1)
 
 COMPLETE
 
