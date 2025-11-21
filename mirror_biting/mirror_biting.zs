@@ -1,6 +1,5 @@
-DEFINE acclimation_time 300 # 5 minutes
-DEFINE bin_length 1         # 1 second
-DEFINE num_bins 1200        # 20 minutes total experiment time
+DEFINE bin_length 60        # 1 minute
+DEFINE num_bins 6           # 60 minutes total experiment time
 
 # define the animal model tracking requirments (see website for other species)
 SET(TARGET_SIZE,15)
@@ -97,7 +96,6 @@ ACTION MAIN
     SET(LOG_STREAM, 2)
     LOGCREATE("RUNTIME|RAW_XY:A1-15")
 
-    #WAIT(acclimation_time)
     INVOKE(LIGHT)
 
     AUTOREFERENCE()
