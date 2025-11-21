@@ -1,4 +1,4 @@
-define SHOWTIME 0.1
+DEFINE SHOWTIME 0.1
 
 DEFINE RADIUS 14.809 # Distance from centre of maze to centre of rectangular arm
 
