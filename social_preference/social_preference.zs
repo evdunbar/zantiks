@@ -1,6 +1,6 @@
 DEFINE acclimation_time 300 # 5 minutes
 DEFINE bin_length 1         # 1 second
-DEFINE num_bins 1200        # 20 minutes total experiment time
+DEFINE num_bins 1800        # 30 minutes total experiment time
 
 SET(TARGET_SIZE, 2)
 SET(DETECTOR_THRESHOLD, 6)
