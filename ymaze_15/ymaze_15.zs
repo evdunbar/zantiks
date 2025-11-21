@@ -13,6 +13,9 @@ SET(DETECTOR_THRESHOLD, 5)
 SET(AUTOREF_MODE, MOVEMENT)
 SET(AUTOREF_TIMEOUT, 10)
 
+# no tracking marker
+TARGETMARKER(0, 0, 0)
+
 # heatmap generation
 DEFINE MAKEMAP 5682
 DEFINE COLOURMAP 5683
@@ -20,12 +23,17 @@ DEFINE SUMSIZE 20
 SET(COLOURMAP, 1) # berkeley inferno
 
 # settings for drawing track traces behind animals
-# DEFINE X_LOGDATA_TRACKS 799 # development setting: log track lengths (total)
+DEFINE X_LOGDATA_TRACKS 799 # development setting: log track lengths (total)
 # DEFINE X_DRAWTRACKS 30011   # development setting: enable track drawing
 
 # Loads arena and detector assets
 LOAD(ARENAS, "ymaze_15_arenas.bmp")
 LOAD(ZONES, "ymaze_15_zones.bmp")
+
+# Set up position tracking
+LOGFILE(2, "xy_position")
+SET(LOG_STREAM_PERFRAME, 2)
+LOGCREATE("RUNTIME|RAW_XY:A1-15")
 
 
 ACTION MAIN
@@ -52,11 +60,6 @@ ACTION MAIN
     LOGAPPEND("TEXT:A14_Z1|TEXT:A14_Z2|TEXT:A14_Z3|TEXT:A14_Z4")
     LOGAPPEND("TEXT:A15_Z1|TEXT:A15_Z2|TEXT:A15_Z3|TEXT:A15_Z4")
     LOGRUN()
-
-    # Set up position tracking
-    LOGFILE(2, "xy_position")
-    SET(LOG_STREAM_PERFRAME, 2)
-    LOGCREATE("RUNTIME|RAW_XY:A1-15")
 
     # Generate column headings for arm changes data
     # Tells the system that we are referring to the arm changes data file for the following lines of code
@@ -102,13 +105,13 @@ COMPLETE
 ACTION WRITE_DATA
 
 	SET(LOG_STREAM, 1)
-	LOGCREATE("RUNTIME|@current_bin|TEXT:TOTAL_DISTANCE_IN_ZONE|ZONE_DISTANCES:A* Z1-4")            
+	LOGCREATE("RUNTIME|@200|TEXT:TOTAL_DISTANCE_IN_ZONE|ZONE_DISTANCES:A* Z1-4")            
 	LOGRUN()
 
-	LOGCREATE("RUNTIME|@current_bin|TEXT:TOTAL_ENTRIES_IN_ZONE|ZONE_COUNTERS:A* Z1-4")                  
+	LOGCREATE("RUNTIME|@200|TEXT:TOTAL_ENTRIES_IN_ZONE|ZONE_COUNTERS:A* Z1-4")                  
 	LOGRUN()   
 
-	LOGCREATE("RUNTIME|@current_bin|TEXT:TOTAL_TIME_SPENT_IN_ZONE|ZONE_TIMERS:A* Z1-4")                  
+	LOGCREATE("RUNTIME|@200|TEXT:TOTAL_TIME_SPENT_IN_ZONE|ZONE_TIMERS:A* Z1-4")                  
 	LOGRUN()
 
 	SET(LOG_STREAM, 0)
