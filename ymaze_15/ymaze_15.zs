@@ -1,12 +1,11 @@
 # define experiment time in seconds
-DEFINE bin_length 60 # 60 seconds = 1 minute
-DEFINE num_bins 60   # multiplied by 60 = 60 minutes total experiment time
+DEFINE bin_length 60 # 1 minute
+DEFINE num_bins 60   # 60 minutes total experiment time
 
 # variables
 DEFINE current_bin 200
 
 # animal model tracking requirements (dependent on animal size)
-# these settings are for zebrafish larvae, see website for examples of other model organisms
 SET(TARGET_SIZE, 2)
 SET(DETECTOR_THRESHOLD, 5)
 
@@ -18,64 +17,58 @@ SET(AUTOREF_TIMEOUT, 10)
 # DEFINE X_LOGDATA_TRACKS 799 # development setting: log track lengths (total)
 # DEFINE X_DRAWTRACKS 30011   # development setting: enable track drawing
 
-# Generates bin data as a separate data file 
-LOGFILE(1, "binned_data")
-SET(LOG_STREAM, 1)
-
-# Set up column names for the processed data file.
-# 4 zones = 3 arms plus middle zone
-# This is set up for a 15 YMazes, delete headings as appropriate.
-LOGCREATE("TEXT:TIME|TEXT:BIN_NUM|TEXT:ENDPOINT")
-LOGAPPEND("TEXT:A1_Z1|TEXT:A1_Z2|TEXT:A1_Z3|TEXT:A1_Z4")
-LOGAPPEND("TEXT:A2_Z1|TEXT:A2_Z2|TEXT:A2_Z3|TEXT:A2_Z4")
-LOGAPPEND("TEXT:A3_Z1|TEXT:A3_Z2|TEXT:A3_Z3|TEXT:A3_Z4")
-LOGAPPEND("TEXT:A4_Z1|TEXT:A4_Z2|TEXT:A4_Z3|TEXT:A4_Z4")
-LOGAPPEND("TEXT:A5_Z1|TEXT:A5_Z2|TEXT:A5_Z3|TEXT:A5_Z4")
-LOGAPPEND("TEXT:A6_Z1|TEXT:A6_Z2|TEXT:A6_Z3|TEXT:A6_Z4")
-LOGAPPEND("TEXT:A7_Z1|TEXT:A7_Z2|TEXT:A7_Z3|TEXT:A7_Z4")
-LOGAPPEND("TEXT:A8_Z1|TEXT:A8_Z2|TEXT:A8_Z3|TEXT:A8_Z4")
-LOGAPPEND("TEXT:A9_Z1|TEXT:A9_Z2|TEXT:A9_Z3|TEXT:A9_Z4")
-LOGAPPEND("TEXT:A10_Z1|TEXT:A10_Z2|TEXT:A10_Z3|TEXT:A10_Z4")
-LOGAPPEND("TEXT:A11_Z1|TEXT:A11_Z2|TEXT:A11_Z3|TEXT:A11_Z4")
-LOGAPPEND("TEXT:A12_Z1|TEXT:A12_Z2|TEXT:A12_Z3|TEXT:A12_Z4")
-LOGAPPEND("TEXT:A13_Z1|TEXT:A13_Z2|TEXT:A13_Z3|TEXT:A13_Z4")
-LOGAPPEND("TEXT:A14_Z1|TEXT:A14_Z2|TEXT:A14_Z3|TEXT:A14_Z4")
-LOGAPPEND("TEXT:A15_Z1|TEXT:A15_Z2|TEXT:A15_Z3|TEXT:A15_Z4")
-
-LOGRUN()
-
-# Set up position tracking
-LOGFILE(2, "xy_position")
-SET(LOG_STREAM_PERFRAME, 2)
-LOGCREATE("RUNTIME|RAW_XY:A1-15")
-
-# Tells the system that we are referring to the arm changes data file for the following lines of code
-SET(LOG_STREAM, 0)
+# Loads arena and detector assets
+LOAD(ARENAS, "ay15.bmp")
+LOAD(ZONES, "zy15.bmp")
 
 
 ACTION MAIN
 
-    # Loads arena and detector assets
-	LOAD(ARENAS, "ay15.bmp")
-	LOAD(ZONES, "zy15.bmp")
+    # Set up column names for the processed data file.
+    # 4 zones = 3 arms plus middle zone
+    # Generates bin data as a separate data file 
+    LOGFILE(1, "binned_data")
+    SET(LOG_STREAM, 1)
+    LOGCREATE("TEXT:TIME|TEXT:BIN_NUM|TEXT:ENDPOINT")
+    LOGAPPEND("TEXT:A1_Z1|TEXT:A1_Z2|TEXT:A1_Z3|TEXT:A1_Z4")
+    LOGAPPEND("TEXT:A2_Z1|TEXT:A2_Z2|TEXT:A2_Z3|TEXT:A2_Z4")
+    LOGAPPEND("TEXT:A3_Z1|TEXT:A3_Z2|TEXT:A3_Z3|TEXT:A3_Z4")
+    LOGAPPEND("TEXT:A4_Z1|TEXT:A4_Z2|TEXT:A4_Z3|TEXT:A4_Z4")
+    LOGAPPEND("TEXT:A5_Z1|TEXT:A5_Z2|TEXT:A5_Z3|TEXT:A5_Z4")
+    LOGAPPEND("TEXT:A6_Z1|TEXT:A6_Z2|TEXT:A6_Z3|TEXT:A6_Z4")
+    LOGAPPEND("TEXT:A7_Z1|TEXT:A7_Z2|TEXT:A7_Z3|TEXT:A7_Z4")
+    LOGAPPEND("TEXT:A8_Z1|TEXT:A8_Z2|TEXT:A8_Z3|TEXT:A8_Z4")
+    LOGAPPEND("TEXT:A9_Z1|TEXT:A9_Z2|TEXT:A9_Z3|TEXT:A9_Z4")
+    LOGAPPEND("TEXT:A10_Z1|TEXT:A10_Z2|TEXT:A10_Z3|TEXT:A10_Z4")
+    LOGAPPEND("TEXT:A11_Z1|TEXT:A11_Z2|TEXT:A11_Z3|TEXT:A11_Z4")
+    LOGAPPEND("TEXT:A12_Z1|TEXT:A12_Z2|TEXT:A12_Z3|TEXT:A12_Z4")
+    LOGAPPEND("TEXT:A13_Z1|TEXT:A13_Z2|TEXT:A13_Z3|TEXT:A13_Z4")
+    LOGAPPEND("TEXT:A14_Z1|TEXT:A14_Z2|TEXT:A14_Z3|TEXT:A14_Z4")
+    LOGAPPEND("TEXT:A15_Z1|TEXT:A15_Z2|TEXT:A15_Z3|TEXT:A15_Z4")
+    LOGRUN()
+
+    # Set up position tracking
+    LOGFILE(2, "xy_position")
+    SET(LOG_STREAM_PERFRAME, 2)
+    LOGCREATE("RUNTIME|RAW_XY:A1-15")
 
     # Generate column headings for arm changes data
+    # Tells the system that we are referring to the arm changes data file for the following lines of code
+    SET(LOG_STREAM, 0)
 	LOGCREATE("TEXT:TIME|TEXT:|TEXT:")
 	LOGAPPEND("TEXT:ARENA|TEXT:ACTION|TEXT:ZONE")
 	LOGRUN()
 
 	LIGHTS(ALL, OFF)                                                                                
-	
     AUTOREFERENCE()    
-
     SET(LOG_PERFRAME, ON)
 	# SET(X_DRAWTRACKS, 1)
-
-	VIDEO(99999999999, "YMaze_tracking")
-	VIDEOSKIP(29)
+	VIDEO(99999999999, "ymaze_tracking")
 
 	INVOKE(YMAZE, num_bins)
+
     SET(LOG_PERFRAME, OFF)
+    VIDEOSTOP()
 
 COMPLETE
 
