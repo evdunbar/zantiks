@@ -1,5 +1,5 @@
 DEFINE bin_length 60        # 1 minute
-DEFINE num_bins 6           # 60 minutes total experiment time
+DEFINE num_bins 60          # 60 minutes total experiment time
 
 # define the animal model tracking requirments (see website for other species)
 SET(TARGET_SIZE,15)
