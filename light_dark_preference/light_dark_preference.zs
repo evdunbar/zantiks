@@ -36,6 +36,7 @@ ACTION MAIN
     # set up for experiments
     LIGHTS(ALL, OFF)
     AUTOREFERENCE()
+    WAIT(acclimation_length)
     LIGHTS(LIGHT16, WHITE)
     SET(LOG_PERFRAME, ON)
     SET(COUNTER1, COUNTER_ZERO)
