@@ -73,6 +73,7 @@ ACTION MAIN
     SET(LOG_STREAM,0)
     INVOKE(LIGHTS_OFF)
     AUTOREFERENCE()
+    WAIT(acclimation_length)
     SET(LOG_PERFRAME,ON)
     VIDEO(99999999999, "startle_response_tracking")
 
