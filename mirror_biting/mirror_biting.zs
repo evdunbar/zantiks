@@ -1,39 +1,35 @@
-# This script demonstrates how to perform a mirrorbiting assay using the 3D setup in the LT 
-# Zantiks do not state that this is how the assay must be performed. The script can easily be adapted to suit your experimental needs 
-# The script will acclimate a fish for 5 mins in the dark (no stimuli perception) then turn on the overhead lights 
-# so that fish can see the mirror (and/or control) then track for 20mins. Distance travelled plus zone use is reported in 1 sec time bins.
-
-DEFINE ACCLIMATION 300	# acclimation time (sec)
-DEFINE TIME_BIN 1		# time over which movement is sampled in seconds
-DEFINE NUM_SAMPLES 1200	# number of time bin samples of data					
-
-DEFINE VIDEO_LENGTH 9999999999 # deliberately long so video always lasts until end of trial  
+DEFINE acclimation_time 300 # 5 minutes
+DEFINE bin_length 1         # 1 second
+DEFINE num_bins 1200        # 20 minutes total experiment time
 
 # define the animal model tracking requirments (see website for other species)
-SET(TARGET_SIZE,15) 
-SET(DETECTOR_THRESHOLD,5) 
+SET(TARGET_SIZE,15)
+SET(DETECTOR_THRESHOLD,5)
 
 # settings for autoreference (required for tracking)
-SET(AUTOREF_MODE,MOVEMENT) 
-SET(AUTOREF_TIMEOUT,3)	#30
- 
-DEFINE X_DRAWTRACKS 30011	# development setting: enable track drawing
-DEFINE X_TRACKTIME 30016	# development setting: sets track length 
+SET(AUTOREF_MODE,MOVEMENT)
+SET(AUTOREF_TIMEOUT,3)
+
+# no tracking marker
+TARGETMARKER(0, 0, 0)
+
+# loads the arenas and zones
+LOAD(ARENAS,"aMirror.bmp")
+LOAD(DETECTORS, "zMirror.bmp")
+
+# Set up position tracking
+LOGFILE(2, "xy_position")
+SET(LOG_STREAM_PERFRAME, 2)
 
 
-###############################
 ACTION MAIN
-    
-    INVOKE(DARK) # turns overhead light and screen off at the start of experiment
-    
-	SET(COUNTER1,COUNTER_ZERO) # sets the data output counter label to begin at 0					
 
-# loads the arenas and zones  
-	LOAD(ARENAS,"aMirror.bmp")
-	LOAD(DETECTORS, "zMirror.bmp")   
-    
-# creates headers for columns in the data file
-	LOGCREATE("TEXT:RUNTIME|TEXT:TIME_BIN")
+    INVOKE(DARK) # turns overhead light and screen off at the start of experiment
+
+    SET(COUNTER1,COUNTER_ZERO) # sets the data output counter label to begin at 0
+
+    # creates headers for columns in the data file
+    LOGCREATE("TEXT:RUNTIME|TEXT:TIME_BIN")
     LOGAPPEND("TEXT:D.A1.Z1|TEXT:D.A1.Z2|TEXT:D.A1.Z3") # D = Distance travelled in zone data
     LOGAPPEND("TEXT:D.A2.Z1|TEXT:D.A2.Z2|TEXT:D.A2.Z3")
     LOGAPPEND("TEXT:D.A3.Z1|TEXT:D.A3.Z2|TEXT:D.A3.Z3")
@@ -54,7 +50,7 @@ ACTION MAIN
     LOGAPPEND("TEXT:D.A18.Z1|TEXT:D.A18.Z2|TEXT:D.A18.Z3")
     LOGAPPEND("TEXT:D.A19.Z1|TEXT:D.A19.Z2|TEXT:D.A19.Z3")
     LOGAPPEND("TEXT:D.A20.Z1|TEXT:D.A20.Z2|TEXT:D.A20.Z3")
-    
+
     LOGAPPEND("TEXT:C.A1.Z1|TEXT:C.A1.Z2|TEXT:C.A1.Z3") # C = Count i.e. number of entries into zone
     LOGAPPEND("TEXT:C.A2.Z1|TEXT:C.A2.Z2|TEXT:C.A2.Z3")
     LOGAPPEND("TEXT:C.A3.Z1|TEXT:C.A3.Z2|TEXT:C.A3.Z3")
@@ -75,7 +71,7 @@ ACTION MAIN
     LOGAPPEND("TEXT:C.A18.Z1|TEXT:C.A18.Z2|TEXT:C.A18.Z3")
     LOGAPPEND("TEXT:C.A19.Z1|TEXT:C.A19.Z2|TEXT:C.A19.Z3")
     LOGAPPEND("TEXT:C.A20.Z1|TEXT:C.A20.Z2|TEXT:C.A20.Z3")
-    
+
     LOGAPPEND("TEXT:T.A1.Z1|TEXT:T.A1.Z2|TEXT:T.A1.Z3") # T = Time spent in zone data
     LOGAPPEND("TEXT:T.A2.Z1|TEXT:T.A2.Z2|TEXT:T.A2.Z3")
     LOGAPPEND("TEXT:T.A3.Z1|TEXT:T.A3.Z2|TEXT:T.A3.Z3")
@@ -96,62 +92,64 @@ ACTION MAIN
     LOGAPPEND("TEXT:T.A18.Z1|TEXT:T.A18.Z2|TEXT:T.A18.Z3")
     LOGAPPEND("TEXT:T.A19.Z1|TEXT:T.A19.Z2|TEXT:T.A19.Z3")
     LOGAPPEND("TEXT:T.A20.Z1|TEXT:T.A20.Z2|TEXT:T.A20.Z3")
-	LOGRUN()
+    LOGRUN()
 
-	#WAIT(ACCLIMATION)
-	INVOKE(LIGHT)
-    
-	AUTOREFERENCE()
-    SET(X_DRAWTRACKS, 1)
-    
-    VIDEO(VIDEO_LENGTH, "mirrorbiting_mwp")    
-    
-    INVOKE(SAMPLE, NUM_SAMPLES)
-    
+    SET(LOG_STREAM, 2)
+    LOGCREATE("RUNTIME|RAW_XY:A1-15")
+
+    #WAIT(acclimation_time)
+    INVOKE(LIGHT)
+
+    AUTOREFERENCE()
+    SET(LOG_PERFRAME, ON)
+    VIDEO(9999999999, "mirrorbiting_tracking")
+
+    INVOKE(SAMPLE, num_bins)
+
+    SET(LOG_PERFRAME, OFF)
     VIDEOSTOP()
 
 COMPLETE
 
 
-############################################
 ACTION DARK
-    
+
     LIGHTS(ALL,OFF)
 
-	SET(GPO6,0)
-	SET(GPO7,0)
-	SET(GPO8,0)
+    SET(GPO6,0)
+    SET(GPO7,0)
+    SET(GPO8,0)
 
 COMPLETE
 
 
 ACTION LIGHT
-    
+
     LIGHTS(ALL,ON)
 
-	SET(GPO6,1)
-	SET(GPO7,1)
-	SET(GPO8,1)
+    SET(GPO6,1)
+    SET(GPO7,1)
+    SET(GPO8,1)
 
 COMPLETE
 
 
 ACTION SAMPLE
 
-	SET(COUNTER1,COUNTER_INC)														
-    
-	LOGDATA(DATA_SNAPSHOT,"begin")                      
+    SET(COUNTER1,COUNTER_INC)
 
-    WAIT(TIME_BIN)
+    LOGDATA(DATA_SNAPSHOT,"begin")
 
-	LOGDATA(DATA_SNAPSHOT,"end")                        
-	LOGDATA(DATA_SELECT,"begin")                        
-	LOGDATA(DATA_DELTA,"end")                           
+    WAIT(bin_length)
+
+    LOGDATA(DATA_SNAPSHOT,"end")
+    LOGDATA(DATA_SELECT,"begin")
+    LOGDATA(DATA_DELTA,"end")
 
     LOGCREATE("RUNTIME|COUNTER1|ZONE_DISTANCES:A1-20 Z1-4|ZONE_COUNTERS:A1-20 Z1-4")
     LOGAPPEND("ZONE_TIMERS:A1-20 Z1-4")
-	LOGRUN()
- 
+    LOGRUN()
+
 COMPLETE
 
 # vim: ft=zanscript

@@ -22,10 +22,6 @@ DEFINE COLOURMAP 5683
 DEFINE SUMSIZE 20
 SET(COLOURMAP, 1) # berkeley inferno
 
-# settings for drawing track traces behind animals
-DEFINE X_LOGDATA_TRACKS 799 # development setting: log track lengths (total)
-# DEFINE X_DRAWTRACKS 30011   # development setting: enable track drawing
-
 # Loads arena and detector assets
 LOAD(ARENAS, "ymaze_15_arenas.bmp")
 LOAD(ZONES, "ymaze_15_zones.bmp")
@@ -33,14 +29,13 @@ LOAD(ZONES, "ymaze_15_zones.bmp")
 # Set up position tracking
 LOGFILE(2, "xy_position")
 SET(LOG_STREAM_PERFRAME, 2)
-LOGCREATE("RUNTIME|RAW_XY:A1-15")
 
 
 ACTION MAIN
 
     # Set up column names for the processed data file.
     # 4 zones = 3 arms plus middle zone
-    # Generates bin data as a separate data file 
+    # Generates bin data as a separate data file
     LOGFILE(1, "binned_data")
     SET(LOG_STREAM, 1)
     LOGCREATE("TEXT:TIME|TEXT:BIN_NUM|TEXT:ENDPOINT")
@@ -64,17 +59,19 @@ ACTION MAIN
     # Generate column headings for arm changes data
     # Tells the system that we are referring to the arm changes data file for the following lines of code
     SET(LOG_STREAM, 0)
-	LOGCREATE("TEXT:TIME|TEXT:|TEXT:")
-	LOGAPPEND("TEXT:ARENA|TEXT:ACTION|TEXT:ZONE")
-	LOGRUN()
+    LOGCREATE("TEXT:TIME|TEXT:|TEXT:")
+    LOGAPPEND("TEXT:ARENA|TEXT:ACTION|TEXT:ZONE")
+    LOGRUN()
 
-	LIGHTS(ALL, OFF)                                                                                
-    AUTOREFERENCE()    
+    SET(LOG_STREAM, 2)
+    LOGCREATE("RUNTIME|RAW_XY:A1-15")
+
+    LIGHTS(ALL, OFF)
+    AUTOREFERENCE()
     SET(LOG_PERFRAME, ON)
-	# SET(X_DRAWTRACKS, 1)
-	VIDEO(99999999999, "ymaze_tracking")
+    VIDEO(99999999999, "ymaze_tracking")
 
-	INVOKE(YMAZE, num_bins)
+    INVOKE(YMAZE, num_bins)
 
     SET(LOG_PERFRAME, OFF)
     VIDEOSTOP()
@@ -85,36 +82,36 @@ COMPLETE
 
 ACTION YMAZE
 
-	@current_bin = @current_bin + 1
+    @current_bin = @current_bin + 1
 
-	LOGDATA(DATA_SNAPSHOT, "BEGIN")
-	LOAD(ZONECHANGES, "ON")      # records every zone change into log stream 0 
+    LOGDATA(DATA_SNAPSHOT, "BEGIN")
+    LOAD(ZONECHANGES, "ON")      # records every zone change into log stream 0
 
-	WAIT(bin_length)                                    
+    WAIT(bin_length)
 
-	LOGDATA(DATA_SNAPSHOT, "END")         
-	LOGDATA(DATA_SELECT, "BEGIN")                                                                
-	LOGDATA(DATA_DELTA, "END")                       
+    LOGDATA(DATA_SNAPSHOT, "END")
+    LOGDATA(DATA_SELECT, "BEGIN")
+    LOGDATA(DATA_DELTA, "END")
 
-	INVOKE(WRITE_DATA, 1)
+    INVOKE(WRITE_DATA, 1)
 
 COMPLETE
 
 
-# The following action writes the processed data to a separate data file 
+# The following action writes the processed data to a separate data file
 ACTION WRITE_DATA
 
-	SET(LOG_STREAM, 1)
-	LOGCREATE("RUNTIME|@200|TEXT:TOTAL_DISTANCE_IN_ZONE|ZONE_DISTANCES:A* Z1-4")            
-	LOGRUN()
+    SET(LOG_STREAM, 1)
+    LOGCREATE("RUNTIME|@200|TEXT:TOTAL_DISTANCE_IN_ZONE|ZONE_DISTANCES:A* Z1-4")
+    LOGRUN()
 
-	LOGCREATE("RUNTIME|@200|TEXT:TOTAL_ENTRIES_IN_ZONE|ZONE_COUNTERS:A* Z1-4")                  
-	LOGRUN()   
+    LOGCREATE("RUNTIME|@200|TEXT:TOTAL_ENTRIES_IN_ZONE|ZONE_COUNTERS:A* Z1-4")
+    LOGRUN()
 
-	LOGCREATE("RUNTIME|@200|TEXT:TOTAL_TIME_SPENT_IN_ZONE|ZONE_TIMERS:A* Z1-4")                  
-	LOGRUN()
+    LOGCREATE("RUNTIME|@200|TEXT:TOTAL_TIME_SPENT_IN_ZONE|ZONE_TIMERS:A* Z1-4")
+    LOGRUN()
 
-	SET(LOG_STREAM, 0)
+    SET(LOG_STREAM, 0)
 
 COMPLETE
 
