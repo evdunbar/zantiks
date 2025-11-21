@@ -79,6 +79,7 @@ ACTION MAIN
     LOGRUN()
     LOGCREATE("RUNTIME|RAW_XY:A1-15")
 
+    SET(LOG_STREAM, 0)
     LIGHTS(ALL, OFF)
     AUTOREFERENCE()
     WAIT(acclimation_length)

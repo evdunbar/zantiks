@@ -31,9 +31,10 @@ ACTION MAIN
 
     # Set up position tracking
     SET(LOG_STREAM, 2)
-    LOGCREATE("RUNTIME|RAW_XY:A1-15")
+    LOGCREATE("RUNTIME|RAW_XY:A1-12")
 
     # set up for experiments
+    SET(LOG_STREAM, 0)
     LIGHTS(ALL, OFF)
     AUTOREFERENCE()
     WAIT(acclimation_length)
