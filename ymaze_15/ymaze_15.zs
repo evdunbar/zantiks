@@ -13,6 +13,12 @@ SET(DETECTOR_THRESHOLD, 5)
 SET(AUTOREF_MODE, MOVEMENT)
 SET(AUTOREF_TIMEOUT, 10)
 
+# heatmap generation
+DEFINE MAKEMAP 5682
+DEFINE COLOURMAP 5683
+DEFINE SUMSIZE 20
+SET(COLOURMAP, 1) # berkeley inferno
+
 # settings for drawing track traces behind animals
 # DEFINE X_LOGDATA_TRACKS 799 # development setting: log track lengths (total)
 # DEFINE X_DRAWTRACKS 30011   # development setting: enable track drawing
@@ -69,6 +75,7 @@ ACTION MAIN
 
     SET(LOG_PERFRAME, OFF)
     VIDEOSTOP()
+    SET(MAKEMAP, SUMSIZE)
 
 COMPLETE
 
@@ -77,8 +84,8 @@ ACTION YMAZE
 
 	@current_bin = @current_bin + 1
 
-	LOGDATA(DATA_SNAPSHOT, "BEGIN")                                                          
-	LOAD(ZONECHANGES, "ON")      # records every zone change into log stream 0                                                                                    
+	LOGDATA(DATA_SNAPSHOT, "BEGIN")
+	LOAD(ZONECHANGES, "ON")      # records every zone change into log stream 0 
 
 	WAIT(bin_length)                                    
 
